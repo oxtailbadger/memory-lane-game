@@ -5,6 +5,19 @@ reverse one of these, add a new entry rather than editing the old one.
 
 ---
 
+## Quiz duplication resolved: shared `QuizGame` component
+
+Reverses "Two quiz games are near-duplicates (accepted tech debt)" below.
+`GuessYearGame` and `NamePlaceGame` are now one `QuizGame` component,
+parameterized by `title`, `hint`, `bank`, and `accent`; the router passes each
+game's props. `buildQuizRound(bank)` replaces the two builders (year-type
+questions keep their choices in chronological order; all others shuffle).
+
+The earlier attempt failed on a fragile whole-function string replace; this one
+spliced the file by unique text markers with a small script instead. New
+quiz-style games should reuse `QuizGame` with a new bank. Word Play's two games
+remain separate — their data shapes differ (sentence/correct, isCorrect/fix).
+
 ## Puzzle tiles: no border/gap, alignment via inset box-shadow
 
 The 3×3 puzzle slices a single SVG across nine tiles using

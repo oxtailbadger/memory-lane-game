@@ -16,9 +16,9 @@ don't lose them between sessions. Check items off as they ship.
 
 ## Code health
 
-- [ ] **Refactor `GuessYearGame` + `NamePlaceGame` into one shared `QuizGame`
-      component** before adding a third quiz-style game (see DECISIONS.md).
 - [ ] Consider splitting `src/App.jsx` into per-game files if it keeps growing.
+- [ ] Consider migrating Word Play's two games onto the shared `QuizGame`
+      component too (their data shapes differ slightly, so it's not free).
 
 ## New game / feature ideas
 
@@ -38,6 +38,8 @@ don't lose them between sessions. Check items off as they ship.
 
 ## Done (for reference)
 
+- [x] Refactor Guess the Year + Name the Place into one shared `QuizGame`
+      component (parameterized by title/hint/bank/accent).
 - [x] Scaffold as installable PWA (Vite + React).
 - [x] Rotating personalized greetings for Mike.
 - [x] Guess the Year (30-question bank, 8 per round).

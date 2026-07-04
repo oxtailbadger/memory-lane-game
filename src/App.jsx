@@ -462,18 +462,23 @@ const YEAR_QUESTIONS = [
   { type: "year", prompt: "The euro became the shared everyday currency across much of Europe in ____.", choices: ["1996", "1999", "2002", "2005"], answer: "2002" },
 ];
 
-function buildYearRound() {
-  return shuffleArr(YEAR_QUESTIONS)
+// Draw eight questions at random from a bank. Year questions keep their
+// choices in order so the years read chronologically; everything else gets
+// shuffled choices.
+function buildQuizRound(bank) {
+  return shuffleArr(bank)
     .slice(0, 8)
     .map((q) => ({ ...q, choices: q.type === "year" ? q.choices : shuffleArr(q.choices) }));
 }
 
-function GuessYearGame({ onBack }) {
-  const [round, setRound] = useState(buildYearRound);
+// Shared fill-in-the-blank quiz used by Guess the Year and Name the Place.
+// New quiz-style games should reuse this with their own bank/title/accent.
+function QuizGame({ onBack, title, hint, bank, accent }) {
+  const [round, setRound] = useState(() => buildQuizRound(bank));
   const [index, setIndex] = useState(0);
   const [picked, setPicked] = useState(null);
   const [score, setScore] = useState(0);
-  const [message, setMessage] = useState("Take your best guess.");
+  const [message, setMessage] = useState(hint);
   const [done, setDone] = useState(false);
 
   const q = round[index];
@@ -493,19 +498,19 @@ function GuessYearGame({ onBack }) {
     if (index + 1 < round.length) {
       setIndex(index + 1);
       setPicked(null);
-      setMessage("Take your best guess.");
+      setMessage(hint);
     } else {
       setDone(true);
     }
   };
 
   const restart = () => {
-    setRound(buildYearRound());
+    setRound(buildQuizRound(bank));
     setIndex(0);
     setPicked(null);
     setScore(0);
     setDone(false);
-    setMessage("Take your best guess.");
+    setMessage(hint);
   };
 
   const parts = q ? q.prompt.split("____") : [];
@@ -523,14 +528,14 @@ function GuessYearGame({ onBack }) {
       </button>
 
       <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 6 }}>
-        <h1 style={{ fontFamily: "'Fraunces', serif", fontSize: 30, color: "#2F3B36", margin: 0 }}>Guess the Year</h1>
+        <h1 style={{ fontFamily: "'Fraunces', serif", fontSize: 30, color: "#2F3B36", margin: 0 }}>{title}</h1>
         {!done && <span style={{ fontSize: 17, color: "#7A8C82", fontWeight: 700 }}>{index + 1} of {round.length}</span>}
       </div>
       <p style={{ fontSize: 19, color: "#5B6B62", margin: "0 0 20px", minHeight: 28 }}>{message}</p>
 
       {done ? (
         <div style={{ textAlign: "center", padding: "40px 16px", background: "#FFFFFF", borderRadius: 20, boxShadow: "0 4px 14px rgba(47,59,54,0.08)" }}>
-          <Sparkles size={40} color="#C9A227" style={{ marginBottom: 10 }} />
+          <Sparkles size={40} color={accent} style={{ marginBottom: 10 }} />
           <p style={{ fontFamily: "'Fraunces', serif", fontSize: 24, color: "#2F3B36", margin: "0 0 8px" }}>
             You got {score} of {round.length}!
           </p>
@@ -538,7 +543,7 @@ function GuessYearGame({ onBack }) {
           <button
             onClick={restart}
             style={{
-              background: "#C9A227", color: "#fff", border: "none", borderRadius: 14,
+              background: accent, color: "#fff", border: "none", borderRadius: 14,
               padding: "16px 28px", fontSize: 19, fontWeight: 700, cursor: "pointer",
             }}
           >
@@ -554,10 +559,10 @@ function GuessYearGame({ onBack }) {
           }}>
             {parts[0]}
             <span style={{
-              display: "inline-block", minWidth: 64, borderBottom: "3px solid #C9A227",
+              display: "inline-block", minWidth: 64, borderBottom: `3px solid ${accent}`,
               textAlign: "center", margin: "0 4px", fontWeight: 600,
             }}>
-              {picked || " "}
+              {picked || " "}
             </span>
             {parts[1]}
           </div>
@@ -593,7 +598,7 @@ function GuessYearGame({ onBack }) {
             <button
               onClick={advance}
               style={{
-                width: "100%", marginTop: 22, background: "#C9A227", color: "#fff", border: "none",
+                width: "100%", marginTop: 22, background: accent, color: "#fff", border: "none",
                 borderRadius: 14, padding: "18px 20px", fontSize: 20, fontWeight: 700, cursor: "pointer",
               }}
             >
@@ -646,150 +651,6 @@ const PLACE_QUESTIONS = [
   { prompt: "The headquarters of State Farm Insurance grew up in ____, Illinois.", choices: ["Bloomington", "Champaign", "Decatur", "Springfield"], answer: "Bloomington" },
   { prompt: "The Caterpillar company grew up in ____, Illinois, along the Illinois River.", choices: ["Peoria", "Rockford", "Aurora", "Joliet"], answer: "Peoria" },
 ];
-
-function buildPlaceRound() {
-  return shuffleArr(PLACE_QUESTIONS)
-    .slice(0, 8)
-    .map((q) => ({ ...q, choices: shuffleArr(q.choices) }));
-}
-
-function NamePlaceGame({ onBack }) {
-  const [round, setRound] = useState(buildPlaceRound);
-  const [index, setIndex] = useState(0);
-  const [picked, setPicked] = useState(null);
-  const [score, setScore] = useState(0);
-  const [message, setMessage] = useState("Where in the world is it?");
-  const [done, setDone] = useState(false);
-
-  const q = round[index];
-
-  const handlePick = (choice) => {
-    if (picked) return;
-    setPicked(choice);
-    if (choice === q.answer) {
-      setScore((s) => s + 1);
-      setMessage("That's right — well done!");
-    } else {
-      setMessage(`Good guess. The answer is "${q.answer}."`);
-    }
-  };
-
-  const advance = () => {
-    if (index + 1 < round.length) {
-      setIndex(index + 1);
-      setPicked(null);
-      setMessage("Where in the world is it?");
-    } else {
-      setDone(true);
-    }
-  };
-
-  const restart = () => {
-    setRound(buildPlaceRound());
-    setIndex(0);
-    setPicked(null);
-    setScore(0);
-    setDone(false);
-    setMessage("Where in the world is it?");
-  };
-
-  const parts = q ? q.prompt.split("____") : [];
-
-  return (
-    <div style={{ minHeight: "100vh", background: "#EDF1EC", padding: "24px 16px 48px", fontFamily: "'Atkinson Hyperlegible', sans-serif" }}>
-      <button
-        onClick={onBack}
-        style={{
-          display: "flex", alignItems: "center", gap: 8, background: "none", border: "none",
-          color: "#3F6B5A", fontSize: 20, fontWeight: 700, padding: "8px 4px", marginBottom: 12, cursor: "pointer",
-        }}
-      >
-        <ArrowLeft size={24} /> Home
-      </button>
-
-      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 6 }}>
-        <h1 style={{ fontFamily: "'Fraunces', serif", fontSize: 30, color: "#2F3B36", margin: 0 }}>Name the Place</h1>
-        {!done && <span style={{ fontSize: 17, color: "#7A8C82", fontWeight: 700 }}>{index + 1} of {round.length}</span>}
-      </div>
-      <p style={{ fontSize: 19, color: "#5B6B62", margin: "0 0 20px", minHeight: 28 }}>{message}</p>
-
-      {done ? (
-        <div style={{ textAlign: "center", padding: "40px 16px", background: "#FFFFFF", borderRadius: 20, boxShadow: "0 4px 14px rgba(47,59,54,0.08)" }}>
-          <Sparkles size={40} color="#B5565F" style={{ marginBottom: 10 }} />
-          <p style={{ fontFamily: "'Fraunces', serif", fontSize: 24, color: "#2F3B36", margin: "0 0 8px" }}>
-            You got {score} of {round.length}!
-          </p>
-          <p style={{ fontSize: 18, color: "#7A8C82", margin: "0 0 20px" }}>Here's a fresh set whenever you're ready.</p>
-          <button
-            onClick={restart}
-            style={{
-              background: "#B5565F", color: "#fff", border: "none", borderRadius: 14,
-              padding: "16px 28px", fontSize: 19, fontWeight: 700, cursor: "pointer",
-            }}
-          >
-            Play Again
-          </button>
-        </div>
-      ) : (
-        <>
-          <div style={{
-            background: "#FFFFFF", borderRadius: 18, padding: "28px 22px", marginBottom: 22,
-            boxShadow: "0 3px 10px rgba(47,59,54,0.08)", fontSize: 23, lineHeight: 1.5, color: "#2F3B36",
-            fontFamily: "'Fraunces', serif",
-          }}>
-            {parts[0]}
-            <span style={{
-              display: "inline-block", minWidth: 64, borderBottom: "3px solid #B5565F",
-              textAlign: "center", margin: "0 4px", fontWeight: 600,
-            }}>
-              {picked || " "}
-            </span>
-            {parts[1]}
-          </div>
-
-          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            {q.choices.map((choice) => {
-              const isPicked = picked === choice;
-              const isCorrect = choice === q.answer;
-              let bg = "#FFFFFF";
-              let border = "2px solid transparent";
-              if (picked) {
-                if (isCorrect) { bg = "#E8F0E5"; border = "2px solid #5B7F76"; }
-                else if (isPicked) { bg = "#F6E9EA"; border = "2px solid #C98A93"; }
-              }
-              return (
-                <button
-                  key={choice}
-                  onClick={() => handlePick(choice)}
-                  disabled={!!picked}
-                  style={{
-                    background: bg, border, borderRadius: 14, padding: "18px 20px",
-                    fontSize: 21, fontWeight: 700, color: "#2F3B36", cursor: picked ? "default" : "pointer",
-                    boxShadow: "0 2px 8px rgba(47,59,54,0.07)", textAlign: "left",
-                  }}
-                >
-                  {choice}
-                </button>
-              );
-            })}
-          </div>
-
-          {picked && (
-            <button
-              onClick={advance}
-              style={{
-                width: "100%", marginTop: 22, background: "#B5565F", color: "#fff", border: "none",
-                borderRadius: 14, padding: "18px 20px", fontSize: 20, fontWeight: 700, cursor: "pointer",
-              }}
-            >
-              {index + 1 < round.length ? "Continue" : "See Results"}
-            </button>
-          )}
-        </>
-      )}
-    </div>
-  );
-}
 
 function WordPlayHub({ onBack, onPickMode }) {
   return (
@@ -1204,8 +1065,8 @@ export default function App() {
   if (screen === "wordplay-choose") return <WordPlayGame onBack={() => setScreen("wordplay")} />;
   if (screen === "wordplay-spot") return <SpotGame onBack={() => setScreen("wordplay")} />;
   if (screen === "puzzles") return <PuzzleGame onBack={() => setScreen("home")} />;
-  if (screen === "guessyear") return <GuessYearGame onBack={() => setScreen("home")} />;
-  if (screen === "nameplace") return <NamePlaceGame onBack={() => setScreen("home")} />;
+  if (screen === "guessyear") return <QuizGame onBack={() => setScreen("home")} title="Guess the Year" hint="Take your best guess." bank={YEAR_QUESTIONS} accent="#C9A227" />;
+  if (screen === "nameplace") return <QuizGame onBack={() => setScreen("home")} title="Name the Place" hint="Where in the world is it?" bank={PLACE_QUESTIONS} accent="#B5565F" />;
 
   return (
     <div style={{ minHeight: "100vh", background: "#EDF1EC", padding: "28px 16px 48px", fontFamily: "'Atkinson Hyperlegible', sans-serif" }}>

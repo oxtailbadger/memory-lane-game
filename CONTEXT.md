@@ -37,8 +37,8 @@ Everything lives in one file, roughly in this order:
 1. `MatchingGame` — memory/concentration pairs game.
 2. Word Play data (`WORD_ROUNDS`, `SPOT_ROUNDS`) + `WordPlayGame`,
    `SpotGame`, `WordPlayHub`.
-3. `YEAR_QUESTIONS` (30) + `GuessYearGame`.
-4. `PLACE_QUESTIONS` (30) + `NamePlaceGame`.
+3. `YEAR_QUESTIONS` (30) + shared `QuizGame` component (`buildQuizRound`).
+4. `PLACE_QUESTIONS` (30) — also rendered by `QuizGame`, via router props.
 5. `PUZZLES` (10 flat-shape SVG scenes) + `PuzzlePlay`, `PuzzleGame`.
 6. `Tile` (the home-screen list button).
 7. `App` — screen router (plain `useState`, no router lib) + rotating greetings.
