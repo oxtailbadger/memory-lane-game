@@ -52,14 +52,14 @@ function MatchingGame({ onBack }) {
             setFlipped([]);
             setBusy(false);
             setMessage("Tap two cards to find a match.");
-          }, 700);
+          }, 2500);
         } else {
           setMessage("Good try — let's look again.");
           setTimeout(() => {
             setFlipped([]);
             setBusy(false);
             setMessage("Tap two cards to find a match.");
-          }, 900);
+          }, 2500);
         }
       }
     },
