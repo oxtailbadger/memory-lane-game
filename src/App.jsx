@@ -751,8 +751,32 @@ function Tile({ Icon, label, sublabel, color, onClick, disabled }) {
   );
 }
 
+const GREETINGS = [
+  "What do you want to play today, Mike?",
+  "It's a nice day to play, Mike",
+  "Good to see you, Mike",
+  "Welcome back, Mike",
+  "Ready for a game, Mike?",
+  "So glad you're here, Mike",
+  "Let's have some fun today, Mike",
+  "What shall we play, Mike?",
+];
+
 export default function App() {
   const [screen, setScreen] = useState("home");
+
+  // Rotate through the greetings one at a time on each fresh open,
+  // remembering where we left off so Mike sees a different one each visit.
+  const [greeting] = useState(() => {
+    try {
+      const last = parseInt(localStorage.getItem("ml-greeting-index") ?? "-1", 10);
+      const next = (last + 1) % GREETINGS.length;
+      localStorage.setItem("ml-greeting-index", String(next));
+      return GREETINGS[next];
+    } catch {
+      return GREETINGS[Math.floor(Math.random() * GREETINGS.length)];
+    }
+  });
 
   useEffect(() => {
     const link1 = document.createElement("link");
@@ -771,7 +795,7 @@ export default function App() {
     <div style={{ minHeight: "100vh", background: "#EDF1EC", padding: "28px 16px 48px", fontFamily: "'Atkinson Hyperlegible', sans-serif" }}>
       <div style={{ marginBottom: 24 }}>
         <p style={{ fontSize: 16, color: "#7A8C82", margin: "0 0 2px", letterSpacing: 0.5 }}>MEMORY LANE</p>
-        <h1 style={{ fontFamily: "'Fraunces', serif", fontSize: 32, color: "#2F3B36", margin: 0 }}>Good to see you</h1>
+        <h1 style={{ fontFamily: "'Fraunces', serif", fontSize: 32, color: "#2F3B36", margin: 0, lineHeight: 1.2 }}>{greeting}</h1>
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
