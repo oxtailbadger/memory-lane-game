@@ -187,15 +187,16 @@ function WordPlayGame({ onBack }) {
     } else {
       setMessage(`Good try. The word is "${round.correct}."`);
     }
-    setTimeout(() => {
-      if (index + 1 < order.length) {
-        setIndex(index + 1);
-        setPicked(null);
-        setMessage("Tap the word that fits best.");
-      } else {
-        setDone(true);
-      }
-    }, 1400);
+  };
+
+  const advance = () => {
+    if (index + 1 < order.length) {
+      setIndex(index + 1);
+      setPicked(null);
+      setMessage("Tap the word that fits best.");
+    } else {
+      setDone(true);
+    }
   };
 
   const restart = () => {
@@ -281,6 +282,18 @@ function WordPlayGame({ onBack }) {
               );
             })}
           </div>
+
+          {picked && (
+            <button
+              onClick={advance}
+              style={{
+                width: "100%", marginTop: 22, background: "#C98A93", color: "#fff", border: "none",
+                borderRadius: 14, padding: "18px 20px", fontSize: 20, fontWeight: 700, cursor: "pointer",
+              }}
+            >
+              {index + 1 < order.length ? "Continue" : "See Results"}
+            </button>
+          )}
         </>
       )}
     </div>
@@ -297,23 +310,23 @@ function SpotGame({ onBack }) {
   const round = order[index];
 
   const handlePick = (choice) => {
-    if (picked) return;
+    if (picked !== null) return;
     setPicked(choice);
     const wasRight = choice === round.isCorrect;
     if (wasRight && round.isCorrect) setMessage("Right — that one's correct!");
     else if (wasRight && !round.isCorrect) setMessage(`Good catch! It should be: "${round.fix}"`);
     else if (round.isCorrect) setMessage("Actually, this one was correct as written.");
     else setMessage(`Close look. It should be: "${round.fix}"`);
+  };
 
-    setTimeout(() => {
-      if (index + 1 < order.length) {
-        setIndex(index + 1);
-        setPicked(null);
-        setMessage("Does this sentence sound right?");
-      } else {
-        setDone(true);
-      }
-    }, 1700);
+  const advance = () => {
+    if (index + 1 < order.length) {
+      setIndex(index + 1);
+      setPicked(null);
+      setMessage("Does this sentence sound right?");
+    } else {
+      setDone(true);
+    }
   };
 
   const restart = () => {
@@ -388,6 +401,18 @@ function SpotGame({ onBack }) {
               );
             })}
           </div>
+
+          {picked !== null && (
+            <button
+              onClick={advance}
+              style={{
+                width: "100%", marginTop: 22, background: "#C98A93", color: "#fff", border: "none",
+                borderRadius: 14, padding: "18px 20px", fontSize: 20, fontWeight: 700, cursor: "pointer",
+              }}
+            >
+              {index + 1 < order.length ? "Continue" : "See Results"}
+            </button>
+          )}
         </>
       )}
     </div>
@@ -462,15 +487,16 @@ function GuessYearGame({ onBack }) {
     } else {
       setMessage(`Good guess. The answer is "${q.answer}."`);
     }
-    setTimeout(() => {
-      if (index + 1 < round.length) {
-        setIndex(index + 1);
-        setPicked(null);
-        setMessage("Take your best guess.");
-      } else {
-        setDone(true);
-      }
-    }, 1700);
+  };
+
+  const advance = () => {
+    if (index + 1 < round.length) {
+      setIndex(index + 1);
+      setPicked(null);
+      setMessage("Take your best guess.");
+    } else {
+      setDone(true);
+    }
   };
 
   const restart = () => {
@@ -562,6 +588,18 @@ function GuessYearGame({ onBack }) {
               );
             })}
           </div>
+
+          {picked && (
+            <button
+              onClick={advance}
+              style={{
+                width: "100%", marginTop: 22, background: "#C9A227", color: "#fff", border: "none",
+                borderRadius: 14, padding: "18px 20px", fontSize: 20, fontWeight: 700, cursor: "pointer",
+              }}
+            >
+              {index + 1 < round.length ? "Continue" : "See Results"}
+            </button>
+          )}
         </>
       )}
     </div>
@@ -634,15 +672,16 @@ function NamePlaceGame({ onBack }) {
     } else {
       setMessage(`Good guess. The answer is "${q.answer}."`);
     }
-    setTimeout(() => {
-      if (index + 1 < round.length) {
-        setIndex(index + 1);
-        setPicked(null);
-        setMessage("Where in the world is it?");
-      } else {
-        setDone(true);
-      }
-    }, 1700);
+  };
+
+  const advance = () => {
+    if (index + 1 < round.length) {
+      setIndex(index + 1);
+      setPicked(null);
+      setMessage("Where in the world is it?");
+    } else {
+      setDone(true);
+    }
   };
 
   const restart = () => {
@@ -734,6 +773,18 @@ function NamePlaceGame({ onBack }) {
               );
             })}
           </div>
+
+          {picked && (
+            <button
+              onClick={advance}
+              style={{
+                width: "100%", marginTop: 22, background: "#B5565F", color: "#fff", border: "none",
+                borderRadius: 14, padding: "18px 20px", fontSize: 20, fontWeight: 700, cursor: "pointer",
+              }}
+            >
+              {index + 1 < round.length ? "Continue" : "See Results"}
+            </button>
+          )}
         </>
       )}
     </div>
