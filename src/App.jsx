@@ -924,14 +924,25 @@ const PUZZLES = [
     </svg>`,
   },
   {
-    title: "Mount Rushmore",
+    title: "Superhero",
     svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300">
       <rect width="300" height="300" fill="#BFDDE8"/>
-      <polygon points="0,300 20,140 90,90 160,150 210,80 300,160 300,300" fill="#9AA0A0"/>
-      <ellipse cx="55" cy="180" rx="22" ry="28" fill="#B7BDBD"/>
-      <ellipse cx="105" cy="165" rx="22" ry="30" fill="#B7BDBD"/>
-      <ellipse cx="160" cy="175" rx="22" ry="28" fill="#B7BDBD"/>
-      <ellipse cx="210" cy="160" rx="22" ry="30" fill="#B7BDBD"/>
+      <circle cx="252" cy="52" r="24" fill="#F3D477"/>
+      <circle cx="58" cy="64" r="18" fill="#FFFFFF"/><circle cx="84" cy="70" r="22" fill="#FFFFFF"/><circle cx="40" cy="76" r="14" fill="#FFFFFF"/>
+      <circle cx="214" cy="236" r="16" fill="#FFFFFF"/><circle cx="242" cy="242" r="20" fill="#FFFFFF"/><circle cx="190" cy="242" r="13" fill="#FFFFFF"/>
+      <path d="M176 118 Q120 120 66 168 Q56 178 74 184 Q120 156 150 158 L182 138 Z" fill="#C0392B"/>
+      <path d="M168 150 Q116 172 78 206 Q70 214 86 214 Q126 190 160 178 Z" fill="#A93226"/>
+      <path d="M150 156 L104 190 L118 204 L162 170 Z" fill="#3B6BB5"/>
+      <path d="M140 168 L96 200 L108 212 L150 180 Z" fill="#2F5695"/>
+      <path d="M104 190 L90 200 L98 212 L118 204 Z" fill="#C0392B"/>
+      <path d="M96 200 L82 210 L90 221 L108 212 Z" fill="#C0392B"/>
+      <path d="M148 132 L192 120 L206 146 L162 170 Z" fill="#3B6BB5"/>
+      <polygon points="176,138 184,148 176,157 168,148" fill="#F3D477"/>
+      <path d="M170 148 L146 170 L156 180 L182 160 Z" fill="#2F5695"/>
+      <path d="M188 124 L236 110 L240 124 L196 142 Z" fill="#3B6BB5"/>
+      <circle cx="242" cy="114" r="12" fill="#C0392B"/>
+      <circle cx="203" cy="118" r="19" fill="#EBB98F"/>
+      <path d="M186 111 Q198 96 221 106 Q210 104 204 111 Q196 104 186 111 Z" fill="#3A2E24"/>
     </svg>`,
   },
   {
@@ -1022,22 +1033,28 @@ function PuzzlePlay({ puzzle, onBack, onNext, hasNext }) {
       </p>
 
       <div style={{
-        display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 3, background: "#2F3B36",
+        display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 0, background: "#2F3B36",
         borderRadius: 14, overflow: "hidden", boxShadow: "0 4px 14px rgba(47,59,54,0.15)",
       }}>
         {pieces.map((originIndex, slotIndex) => {
           const col = originIndex % 3;
           const row = Math.floor(originIndex / 3);
+          // No border or gap here: the sliced background is positioned relative
+          // to the tile box, so any spacing would shift the slices and break the
+          // seams. Selection and the faint grid lines use inset box-shadow, which
+          // paints over the image without changing the tile's geometry.
           return (
             <button
               key={slotIndex}
               onClick={() => tapPiece(slotIndex)}
               disabled={solved}
               style={{
-                aspectRatio: "1", border: selected === slotIndex ? "4px solid #C9A227" : "4px solid transparent",
-                padding: 0, cursor: solved ? "default" : "pointer",
+                aspectRatio: "1", border: "none", padding: 0, cursor: solved ? "default" : "pointer",
                 backgroundImage: `url("${dataUri}")`, backgroundSize: "300% 300%",
                 backgroundPosition: `${col * 50}% ${row * 50}%`,
+                boxShadow: selected === slotIndex
+                  ? "inset 0 0 0 4px #C9A227"
+                  : "inset 0 0 0 1px rgba(255,255,255,0.35)",
               }}
             />
           );
