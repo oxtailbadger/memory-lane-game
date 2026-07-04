@@ -568,6 +568,178 @@ function GuessYearGame({ onBack }) {
   );
 }
 
+// A bank of 30 well-known landmarks and places. Every answer is a place, so
+// these all use the same "____" fill-in interaction. The final seven are places
+// meaningful to Mike — later these can be swapped for his own photos/locations.
+const PLACE_QUESTIONS = [
+  // World landmarks
+  { prompt: "The Eiffel Tower is a famous landmark in ____, France.", choices: ["Paris", "Lyon", "Nice", "Bordeaux"], answer: "Paris" },
+  { prompt: "The ancient Colosseum draws visitors to ____, Italy.", choices: ["Rome", "Milan", "Naples", "Turin"], answer: "Rome" },
+  { prompt: "The clock tower known as Big Ben stands in ____, England.", choices: ["London", "Manchester", "Liverpool", "Leeds"], answer: "London" },
+  { prompt: "The Great Wall winds for thousands of miles across ____.", choices: ["China", "Japan", "India", "Mongolia"], answer: "China" },
+  { prompt: "The marble Taj Mahal is a beloved landmark of ____.", choices: ["India", "Pakistan", "Iran", "Nepal"], answer: "India" },
+  { prompt: "The sail-shaped Opera House sits on the harbor in ____, Australia.", choices: ["Sydney", "Melbourne", "Perth", "Brisbane"], answer: "Sydney" },
+  { prompt: "The Christ the Redeemer statue looks out over ____, Brazil.", choices: ["Rio de Janeiro", "Sao Paulo", "Brasilia", "Salvador"], answer: "Rio de Janeiro" },
+  { prompt: "The famous Leaning Tower is found in ____, Italy.", choices: ["Pisa", "Venice", "Florence", "Verona"], answer: "Pisa" },
+  { prompt: "The Great Pyramids and Sphinx rise from the desert in ____.", choices: ["Egypt", "Greece", "Morocco", "Turkey"], answer: "Egypt" },
+  { prompt: "The ancient stone circle called Stonehenge stands in ____.", choices: ["England", "Ireland", "Scotland", "Wales"], answer: "England" },
+  { prompt: "The snow-capped Mount Fuji is the pride of ____.", choices: ["Japan", "China", "Korea", "Nepal"], answer: "Japan" },
+
+  // United States landmarks
+  { prompt: "The Statue of Liberty welcomes ships into ____ Harbor.", choices: ["New York", "Boston", "Baltimore", "San Francisco"], answer: "New York" },
+  { prompt: "The Golden Gate Bridge spans the bay at ____, California.", choices: ["San Francisco", "San Diego", "Sacramento", "Oakland"], answer: "San Francisco" },
+  { prompt: "Four presidents are carved into Mount Rushmore in ____.", choices: ["South Dakota", "North Dakota", "Wyoming", "Montana"], answer: "South Dakota" },
+  { prompt: "The soaring Gateway Arch is the symbol of ____, Missouri.", choices: ["St. Louis", "Kansas City", "Springfield", "Columbia"], answer: "St. Louis" },
+  { prompt: "The Space Needle towers over the skyline of ____, Washington.", choices: ["Seattle", "Spokane", "Tacoma", "Olympia"], answer: "Seattle" },
+  { prompt: "The giant Hollywood Sign sits in the hills above ____.", choices: ["Los Angeles", "San Diego", "Phoenix", "Las Vegas"], answer: "Los Angeles" },
+  { prompt: "The mile-deep Grand Canyon is a natural wonder of ____.", choices: ["Arizona", "Nevada", "Utah", "Colorado"], answer: "Arizona" },
+  { prompt: "The Willis Tower (once the Sears Tower) rises above ____, Illinois.", choices: ["Chicago", "Springfield", "Rockford", "Naperville"], answer: "Chicago" },
+  { prompt: "The Liberty Bell is a treasured landmark of ____, Pennsylvania.", choices: ["Philadelphia", "Pittsburgh", "Harrisburg", "Allentown"], answer: "Philadelphia" },
+  { prompt: "The historic Alamo mission stands in ____, Texas.", choices: ["San Antonio", "Houston", "Dallas", "Austin"], answer: "San Antonio" },
+  { prompt: "Millions visit the thundering waterfalls at ____ on the U.S. and Canada border.", choices: ["Niagara Falls", "Lake Tahoe", "Yellowstone", "Yosemite"], answer: "Niagara Falls" },
+  { prompt: "Cinderella Castle greets guests at Walt Disney World in ____, Florida.", choices: ["Orlando", "Miami", "Tampa", "Jacksonville"], answer: "Orlando" },
+
+  // Places close to home for Mike
+  { prompt: "President Franklin Roosevelt's 'Little White House' retreat is in ____, Georgia.", choices: ["Warm Springs", "Savannah", "Athens", "Macon"], answer: "Warm Springs" },
+  { prompt: "A towering statue of Superman stands in ____, Illinois, the hero's official hometown.", choices: ["Metropolis", "Marion", "Cairo", "Anna"], answer: "Metropolis" },
+  { prompt: "The Saluki dog is the mascot of ____ University in Carbondale.", choices: ["Southern Illinois", "Northern Illinois", "Eastern Illinois", "Illinois State"], answer: "Southern Illinois" },
+  { prompt: "The Lincoln Memorial and Washington Monument stand in ____, the nation's capital.", choices: ["Washington, D.C.", "Philadelphia", "New York City", "Boston"], answer: "Washington, D.C." },
+  { prompt: "The historic Pickwick Theatre, a grand 1928 movie palace, is a landmark of ____, Illinois.", choices: ["Park Ridge", "Oak Park", "Evanston", "Des Plaines"], answer: "Park Ridge" },
+  { prompt: "The headquarters of State Farm Insurance grew up in ____, Illinois.", choices: ["Bloomington", "Champaign", "Decatur", "Springfield"], answer: "Bloomington" },
+  { prompt: "The Caterpillar company grew up in ____, Illinois, along the Illinois River.", choices: ["Peoria", "Rockford", "Aurora", "Joliet"], answer: "Peoria" },
+];
+
+function buildPlaceRound() {
+  return shuffleArr(PLACE_QUESTIONS)
+    .slice(0, 8)
+    .map((q) => ({ ...q, choices: shuffleArr(q.choices) }));
+}
+
+function NamePlaceGame({ onBack }) {
+  const [round, setRound] = useState(buildPlaceRound);
+  const [index, setIndex] = useState(0);
+  const [picked, setPicked] = useState(null);
+  const [score, setScore] = useState(0);
+  const [message, setMessage] = useState("Where in the world is it?");
+  const [done, setDone] = useState(false);
+
+  const q = round[index];
+
+  const handlePick = (choice) => {
+    if (picked) return;
+    setPicked(choice);
+    if (choice === q.answer) {
+      setScore((s) => s + 1);
+      setMessage("That's right — well done!");
+    } else {
+      setMessage(`Good guess. The answer is "${q.answer}."`);
+    }
+    setTimeout(() => {
+      if (index + 1 < round.length) {
+        setIndex(index + 1);
+        setPicked(null);
+        setMessage("Where in the world is it?");
+      } else {
+        setDone(true);
+      }
+    }, 1700);
+  };
+
+  const restart = () => {
+    setRound(buildPlaceRound());
+    setIndex(0);
+    setPicked(null);
+    setScore(0);
+    setDone(false);
+    setMessage("Where in the world is it?");
+  };
+
+  const parts = q ? q.prompt.split("____") : [];
+
+  return (
+    <div style={{ minHeight: "100vh", background: "#EDF1EC", padding: "24px 16px 48px", fontFamily: "'Atkinson Hyperlegible', sans-serif" }}>
+      <button
+        onClick={onBack}
+        style={{
+          display: "flex", alignItems: "center", gap: 8, background: "none", border: "none",
+          color: "#3F6B5A", fontSize: 20, fontWeight: 700, padding: "8px 4px", marginBottom: 12, cursor: "pointer",
+        }}
+      >
+        <ArrowLeft size={24} /> Home
+      </button>
+
+      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 6 }}>
+        <h1 style={{ fontFamily: "'Fraunces', serif", fontSize: 30, color: "#2F3B36", margin: 0 }}>Name the Place</h1>
+        {!done && <span style={{ fontSize: 17, color: "#7A8C82", fontWeight: 700 }}>{index + 1} of {round.length}</span>}
+      </div>
+      <p style={{ fontSize: 19, color: "#5B6B62", margin: "0 0 20px", minHeight: 28 }}>{message}</p>
+
+      {done ? (
+        <div style={{ textAlign: "center", padding: "40px 16px", background: "#FFFFFF", borderRadius: 20, boxShadow: "0 4px 14px rgba(47,59,54,0.08)" }}>
+          <Sparkles size={40} color="#B5565F" style={{ marginBottom: 10 }} />
+          <p style={{ fontFamily: "'Fraunces', serif", fontSize: 24, color: "#2F3B36", margin: "0 0 8px" }}>
+            You got {score} of {round.length}!
+          </p>
+          <p style={{ fontSize: 18, color: "#7A8C82", margin: "0 0 20px" }}>Here's a fresh set whenever you're ready.</p>
+          <button
+            onClick={restart}
+            style={{
+              background: "#B5565F", color: "#fff", border: "none", borderRadius: 14,
+              padding: "16px 28px", fontSize: 19, fontWeight: 700, cursor: "pointer",
+            }}
+          >
+            Play Again
+          </button>
+        </div>
+      ) : (
+        <>
+          <div style={{
+            background: "#FFFFFF", borderRadius: 18, padding: "28px 22px", marginBottom: 22,
+            boxShadow: "0 3px 10px rgba(47,59,54,0.08)", fontSize: 23, lineHeight: 1.5, color: "#2F3B36",
+            fontFamily: "'Fraunces', serif",
+          }}>
+            {parts[0]}
+            <span style={{
+              display: "inline-block", minWidth: 64, borderBottom: "3px solid #B5565F",
+              textAlign: "center", margin: "0 4px", fontWeight: 600,
+            }}>
+              {picked || " "}
+            </span>
+            {parts[1]}
+          </div>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            {q.choices.map((choice) => {
+              const isPicked = picked === choice;
+              const isCorrect = choice === q.answer;
+              let bg = "#FFFFFF";
+              let border = "2px solid transparent";
+              if (picked) {
+                if (isCorrect) { bg = "#E8F0E5"; border = "2px solid #5B7F76"; }
+                else if (isPicked) { bg = "#F6E9EA"; border = "2px solid #C98A93"; }
+              }
+              return (
+                <button
+                  key={choice}
+                  onClick={() => handlePick(choice)}
+                  disabled={!!picked}
+                  style={{
+                    background: bg, border, borderRadius: 14, padding: "18px 20px",
+                    fontSize: 21, fontWeight: 700, color: "#2F3B36", cursor: picked ? "default" : "pointer",
+                    boxShadow: "0 2px 8px rgba(47,59,54,0.07)", textAlign: "left",
+                  }}
+                >
+                  {choice}
+                </button>
+              );
+            })}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 function WordPlayHub({ onBack, onPickMode }) {
   return (
     <div style={{ minHeight: "100vh", background: "#EDF1EC", padding: "24px 16px 48px", fontFamily: "'Atkinson Hyperlegible', sans-serif" }}>
@@ -965,6 +1137,7 @@ export default function App() {
   if (screen === "wordplay-spot") return <SpotGame onBack={() => setScreen("wordplay")} />;
   if (screen === "puzzles") return <PuzzleGame onBack={() => setScreen("home")} />;
   if (screen === "guessyear") return <GuessYearGame onBack={() => setScreen("home")} />;
+  if (screen === "nameplace") return <NamePlaceGame onBack={() => setScreen("home")} />;
 
   return (
     <div style={{ minHeight: "100vh", background: "#EDF1EC", padding: "28px 16px 48px", fontFamily: "'Atkinson Hyperlegible', sans-serif" }}>
@@ -977,7 +1150,7 @@ export default function App() {
         <Tile Icon={Puzzle} label="Matching" sublabel="Find the pairs" color="#5B7F76" onClick={() => setScreen("matching")} />
         <Tile Icon={MessageCircle} label="Word Play" sublabel="Right word, right place" color="#C98A93" onClick={() => setScreen("wordplay")} />
         <Tile Icon={Calendar} label="Guess the Year" sublabel="When did it happen?" color="#C9A227" onClick={() => setScreen("guessyear")} />
-        <Tile Icon={MapPin} label="Name the Place" sublabel="Coming soon" color="#B5565F" disabled />
+        <Tile Icon={MapPin} label="Name the Place" sublabel="Landmarks near and far" color="#B5565F" onClick={() => setScreen("nameplace")} />
         <Tile Icon={Grid3x3} label="Picture Puzzles" sublabel="Put the picture together" color="#3F6B5A" onClick={() => setScreen("puzzles")} />
       </div>
     </div>
