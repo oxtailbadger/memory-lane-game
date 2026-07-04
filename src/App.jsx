@@ -394,6 +394,180 @@ function SpotGame({ onBack }) {
   );
 }
 
+// A bank of 30 upbeat milestones from 1950–2010. Every prompt has a "____"
+// blank so the same fill-in interaction works whether the answer is a year or
+// a name/word. Leans into technology, current events, space, and Coca-Cola.
+const YEAR_QUESTIONS = [
+  // Coca-Cola
+  { type: "year", prompt: "Coca-Cola introduced its Diet Coke soft drink in ____.", choices: ["1978", "1982", "1986", "1990"], answer: "1982" },
+  { type: "year", prompt: "Coca-Cola launched the lemon-lime soda Sprite in ____.", choices: ["1955", "1961", "1968", "1974"], answer: "1961" },
+  { type: "year", prompt: "Coca-Cola's cheerful 'I'd Like to Buy the World a Coke' ad first aired in ____.", choices: ["1965", "1971", "1977", "1983"], answer: "1971" },
+  { type: "blank", prompt: "In 1985 Coca-Cola brought back its original recipe under the name Coca-Cola ____.", choices: ["Classic", "Zero", "Life", "Gold"], answer: "Classic" },
+
+  // Technology
+  { type: "year", prompt: "Apple unveiled the very first iPhone in ____.", choices: ["2001", "2004", "2007", "2010"], answer: "2007" },
+  { type: "year", prompt: "Apple released its iPod portable music player in ____.", choices: ["1998", "2001", "2004", "2007"], answer: "2001" },
+  { type: "blank", prompt: "Apple's famous '1984' Super Bowl ad launched the ____ computer.", choices: ["Macintosh", "Lisa", "iMac", "Newton"], answer: "Macintosh" },
+  { type: "year", prompt: "The Google search engine was founded in ____.", choices: ["1995", "1998", "2001", "2004"], answer: "1998" },
+  { type: "year", prompt: "The free online encyclopedia Wikipedia launched in ____.", choices: ["1998", "2001", "2004", "2007"], answer: "2001" },
+  { type: "blank", prompt: "Mark Zuckerberg started the social network ____ from his college dorm in 2004.", choices: ["Facebook", "Twitter", "Instagram", "MySpace"], answer: "Facebook" },
+  { type: "year", prompt: "The video-sharing website YouTube was founded in ____.", choices: ["2002", "2005", "2008", "2010"], answer: "2005" },
+  { type: "blank", prompt: "British scientist Tim Berners-Lee invented the ____ in 1989.", choices: ["World Wide Web", "telephone", "television", "transistor"], answer: "World Wide Web" },
+  { type: "year", prompt: "IBM's Deep Blue computer beat world chess champion Garry Kasparov in ____.", choices: ["1991", "1994", "1997", "2000"], answer: "1997" },
+  { type: "blank", prompt: "Sony released its pocket-sized ____ portable cassette player in 1979.", choices: ["Walkman", "iPod", "Discman", "Zune"], answer: "Walkman" },
+
+  // Space & science
+  { type: "blank", prompt: "____ became the first person to walk on the Moon in 1969.", choices: ["Neil Armstrong", "Buzz Aldrin", "John Glenn", "Alan Shepard"], answer: "Neil Armstrong" },
+  { type: "year", prompt: "Sputnik, the first satellite to orbit Earth, was launched in ____.", choices: ["1957", "1962", "1969", "1975"], answer: "1957" },
+  { type: "blank", prompt: "Cosmonaut ____ became the first human to travel into space in 1961.", choices: ["Yuri Gagarin", "Neil Armstrong", "John Glenn", "Buzz Aldrin"], answer: "Yuri Gagarin" },
+  { type: "year", prompt: "The Hubble Space Telescope was launched into orbit in ____.", choices: ["1984", "1990", "1996", "2003"], answer: "1990" },
+  { type: "blank", prompt: "____ became the first American woman in space in 1983.", choices: ["Sally Ride", "Amelia Earhart", "Valentina Tereshkova", "Mae Jemison"], answer: "Sally Ride" },
+  { type: "year", prompt: "The world's first 'test-tube baby' was born healthy in ____.", choices: ["1972", "1978", "1984", "1990"], answer: "1978" },
+  { type: "year", prompt: "The World Health Organization declared the disease smallpox eradicated in ____.", choices: ["1974", "1980", "1986", "1992"], answer: "1980" },
+
+  // Culture, sports & world events
+  { type: "year", prompt: "Disneyland first opened its gates in California in ____.", choices: ["1950", "1955", "1961", "1967"], answer: "1955" },
+  { type: "year", prompt: "Walt Disney World opened in Florida in ____.", choices: ["1965", "1971", "1977", "1983"], answer: "1971" },
+  { type: "year", prompt: "The very first Super Bowl football game was played in ____.", choices: ["1961", "1967", "1972", "1978"], answer: "1967" },
+  { type: "blank", prompt: "The band ____ first appeared on America's Ed Sullivan Show in 1964.", choices: ["The Beatles", "The Rolling Stones", "The Beach Boys", "The Monkees"], answer: "The Beatles" },
+  { type: "blank", prompt: "____ was freed from prison in 1990 and later became South Africa's president.", choices: ["Nelson Mandela", "Desmond Tutu", "Kofi Annan", "Jesse Owens"], answer: "Nelson Mandela" },
+  { type: "year", prompt: "Crowds celebrated together as the Berlin Wall came down in ____.", choices: ["1983", "1986", "1989", "1992"], answer: "1989" },
+  { type: "blank", prompt: "Swimmer ____ won a record eight gold medals at the 2008 Beijing Olympics.", choices: ["Michael Phelps", "Mark Spitz", "Carl Lewis", "Ian Thorpe"], answer: "Michael Phelps" },
+  { type: "year", prompt: "The United States hosted soccer's FIFA World Cup for the first time in ____.", choices: ["1986", "1990", "1994", "1998"], answer: "1994" },
+  { type: "year", prompt: "The euro became the shared everyday currency across much of Europe in ____.", choices: ["1996", "1999", "2002", "2005"], answer: "2002" },
+];
+
+function buildYearRound() {
+  return shuffleArr(YEAR_QUESTIONS)
+    .slice(0, 8)
+    .map((q) => ({ ...q, choices: q.type === "year" ? q.choices : shuffleArr(q.choices) }));
+}
+
+function GuessYearGame({ onBack }) {
+  const [round, setRound] = useState(buildYearRound);
+  const [index, setIndex] = useState(0);
+  const [picked, setPicked] = useState(null);
+  const [score, setScore] = useState(0);
+  const [message, setMessage] = useState("Take your best guess.");
+  const [done, setDone] = useState(false);
+
+  const q = round[index];
+
+  const handlePick = (choice) => {
+    if (picked) return;
+    setPicked(choice);
+    if (choice === q.answer) {
+      setScore((s) => s + 1);
+      setMessage("That's right — well done!");
+    } else {
+      setMessage(`Good guess. The answer is "${q.answer}."`);
+    }
+    setTimeout(() => {
+      if (index + 1 < round.length) {
+        setIndex(index + 1);
+        setPicked(null);
+        setMessage("Take your best guess.");
+      } else {
+        setDone(true);
+      }
+    }, 1700);
+  };
+
+  const restart = () => {
+    setRound(buildYearRound());
+    setIndex(0);
+    setPicked(null);
+    setScore(0);
+    setDone(false);
+    setMessage("Take your best guess.");
+  };
+
+  const parts = q ? q.prompt.split("____") : [];
+
+  return (
+    <div style={{ minHeight: "100vh", background: "#EDF1EC", padding: "24px 16px 48px", fontFamily: "'Atkinson Hyperlegible', sans-serif" }}>
+      <button
+        onClick={onBack}
+        style={{
+          display: "flex", alignItems: "center", gap: 8, background: "none", border: "none",
+          color: "#3F6B5A", fontSize: 20, fontWeight: 700, padding: "8px 4px", marginBottom: 12, cursor: "pointer",
+        }}
+      >
+        <ArrowLeft size={24} /> Home
+      </button>
+
+      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 6 }}>
+        <h1 style={{ fontFamily: "'Fraunces', serif", fontSize: 30, color: "#2F3B36", margin: 0 }}>Guess the Year</h1>
+        {!done && <span style={{ fontSize: 17, color: "#7A8C82", fontWeight: 700 }}>{index + 1} of {round.length}</span>}
+      </div>
+      <p style={{ fontSize: 19, color: "#5B6B62", margin: "0 0 20px", minHeight: 28 }}>{message}</p>
+
+      {done ? (
+        <div style={{ textAlign: "center", padding: "40px 16px", background: "#FFFFFF", borderRadius: 20, boxShadow: "0 4px 14px rgba(47,59,54,0.08)" }}>
+          <Sparkles size={40} color="#C9A227" style={{ marginBottom: 10 }} />
+          <p style={{ fontFamily: "'Fraunces', serif", fontSize: 24, color: "#2F3B36", margin: "0 0 8px" }}>
+            You got {score} of {round.length}!
+          </p>
+          <p style={{ fontSize: 18, color: "#7A8C82", margin: "0 0 20px" }}>Here's a fresh set whenever you're ready.</p>
+          <button
+            onClick={restart}
+            style={{
+              background: "#C9A227", color: "#fff", border: "none", borderRadius: 14,
+              padding: "16px 28px", fontSize: 19, fontWeight: 700, cursor: "pointer",
+            }}
+          >
+            Play Again
+          </button>
+        </div>
+      ) : (
+        <>
+          <div style={{
+            background: "#FFFFFF", borderRadius: 18, padding: "28px 22px", marginBottom: 22,
+            boxShadow: "0 3px 10px rgba(47,59,54,0.08)", fontSize: 23, lineHeight: 1.5, color: "#2F3B36",
+            fontFamily: "'Fraunces', serif",
+          }}>
+            {parts[0]}
+            <span style={{
+              display: "inline-block", minWidth: 64, borderBottom: "3px solid #C9A227",
+              textAlign: "center", margin: "0 4px", fontWeight: 600,
+            }}>
+              {picked || " "}
+            </span>
+            {parts[1]}
+          </div>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            {q.choices.map((choice) => {
+              const isPicked = picked === choice;
+              const isCorrect = choice === q.answer;
+              let bg = "#FFFFFF";
+              let border = "2px solid transparent";
+              if (picked) {
+                if (isCorrect) { bg = "#E8F0E5"; border = "2px solid #5B7F76"; }
+                else if (isPicked) { bg = "#F6E9EA"; border = "2px solid #C98A93"; }
+              }
+              return (
+                <button
+                  key={choice}
+                  onClick={() => handlePick(choice)}
+                  disabled={!!picked}
+                  style={{
+                    background: bg, border, borderRadius: 14, padding: "18px 20px",
+                    fontSize: 21, fontWeight: 700, color: "#2F3B36", cursor: picked ? "default" : "pointer",
+                    boxShadow: "0 2px 8px rgba(47,59,54,0.07)", textAlign: "left",
+                  }}
+                >
+                  {choice}
+                </button>
+              );
+            })}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 function WordPlayHub({ onBack, onPickMode }) {
   return (
     <div style={{ minHeight: "100vh", background: "#EDF1EC", padding: "24px 16px 48px", fontFamily: "'Atkinson Hyperlegible', sans-serif" }}>
@@ -790,6 +964,7 @@ export default function App() {
   if (screen === "wordplay-choose") return <WordPlayGame onBack={() => setScreen("wordplay")} />;
   if (screen === "wordplay-spot") return <SpotGame onBack={() => setScreen("wordplay")} />;
   if (screen === "puzzles") return <PuzzleGame onBack={() => setScreen("home")} />;
+  if (screen === "guessyear") return <GuessYearGame onBack={() => setScreen("home")} />;
 
   return (
     <div style={{ minHeight: "100vh", background: "#EDF1EC", padding: "28px 16px 48px", fontFamily: "'Atkinson Hyperlegible', sans-serif" }}>
@@ -801,7 +976,7 @@ export default function App() {
       <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
         <Tile Icon={Puzzle} label="Matching" sublabel="Find the pairs" color="#5B7F76" onClick={() => setScreen("matching")} />
         <Tile Icon={MessageCircle} label="Word Play" sublabel="Right word, right place" color="#C98A93" onClick={() => setScreen("wordplay")} />
-        <Tile Icon={Calendar} label="Guess the Year" sublabel="Coming soon" color="#C9A227" disabled />
+        <Tile Icon={Calendar} label="Guess the Year" sublabel="When did it happen?" color="#C9A227" onClick={() => setScreen("guessyear")} />
         <Tile Icon={MapPin} label="Name the Place" sublabel="Coming soon" color="#B5565F" disabled />
         <Tile Icon={Grid3x3} label="Picture Puzzles" sublabel="Put the picture together" color="#3F6B5A" onClick={() => setScreen("puzzles")} />
       </div>
