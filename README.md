@@ -2,8 +2,15 @@
 
 Gentle games for keeping the mind bright — a small, installable web app.
 
-Includes Matching, Word Play (Choose the Word / Spot the Slip), and Picture
-Puzzles, with a calm, high-contrast, large-type design built for easy use.
+Includes Matching, Word Play (Choose the Word / Spot the Slip), Guess the Year,
+Name the Place, and Picture Puzzles, with a calm, high-contrast, large-type
+design built for easy use.
+
+## Project docs
+
+- [CONTEXT.md](CONTEXT.md) — what this is, who it's for, and how it's built.
+- [DECISIONS.md](DECISIONS.md) — why things are the way they are.
+- [TODO.md](TODO.md) — roadmap and backlog.
 
 ## Run locally
 
