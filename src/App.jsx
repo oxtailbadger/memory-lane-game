@@ -388,7 +388,10 @@ function SpotGame({ onBack }) {
         <ArrowLeft size={24} /> Word Play
       </button>
 
-      <h1 style={{ fontFamily: "'Fraunces', serif", fontSize: 30, color: "#2F3B36", margin: "0 0 6px" }}>Spot the Slip</h1>
+      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 6 }}>
+        <h1 style={{ fontFamily: "'Fraunces', serif", fontSize: 30, color: "#2F3B36", margin: 0 }}>Spot the Slip</h1>
+        {!done && <span style={{ fontSize: 17, color: "#7A8C82", fontWeight: 700 }}>{index + 1} of {order.length}</span>}
+      </div>
       <p style={{ fontSize: 19, color: "#5B6B62", margin: "0 0 20px", minHeight: 50 }}>{message}</p>
 
       {done ? (
@@ -419,8 +422,8 @@ function SpotGame({ onBack }) {
 
           <div style={{ display: "flex", gap: 12 }}>
             {[
-              { label: "Sounds Right", value: true, color: "#5B7F76" },
-              { label: "Sounds Off", value: false, color: "#C98A93" },
+              { label: "Looks Right", value: true, color: "#5B7F76" },
+              { label: "Looks Off", value: false, color: "#C98A93" },
             ].map((opt) => {
               const isPicked = picked === opt.value;
               return (
