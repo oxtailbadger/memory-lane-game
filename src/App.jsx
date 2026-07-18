@@ -146,6 +146,26 @@ const WORD_ROUNDS = [
   { sentence: "I would rather stay home ___ go out tonight.", choices: ["then", "than"], correct: "than" },
   { sentence: "___ coming with us to the lake?", choices: ["Whose", "Who's"], correct: "Who's" },
   { sentence: "That movie had a big ___ on me.", choices: ["affect", "effect"], correct: "effect" },
+  { sentence: "We're taking ___ car to the picnic.", choices: ["our", "are"], correct: "our" },
+  { sentence: "Would you like ___ cup of coffee?", choices: ["a", "an"], correct: "a" },
+  { sentence: "She has ___ apple in her lunch bag.", choices: ["a", "an"], correct: "an" },
+  { sentence: "I need to buy ___ eggs for breakfast.", choices: ["two", "too", "to"], correct: "two" },
+  { sentence: "It's nice ___ see you again.", choices: ["two", "too", "to"], correct: "to" },
+  { sentence: "I'm coming along ___.", choices: ["two", "too", "to"], correct: "too" },
+  { sentence: "Please ___ the gate on your way out.", choices: ["close", "clothes"], correct: "close" },
+  { sentence: "The weather ___ nice for a walk today.", choices: ["is", "are"], correct: "is" },
+  { sentence: "The children ___ playing in the yard.", choices: ["is", "are"], correct: "are" },
+  { sentence: "I ___ my coffee every morning.", choices: ["drink", "drank"], correct: "drink" },
+  { sentence: "Yesterday I ___ a lovely walk in the park.", choices: ["take", "took"], correct: "took" },
+  { sentence: "Will you ___ me at the station?", choices: ["meet", "meat"], correct: "meet" },
+  { sentence: "We had chicken for dinner, not ___.", choices: ["meet", "meat"], correct: "meat" },
+  { sentence: "I can ___ the birds singing outside.", choices: ["here", "hear"], correct: "hear" },
+  { sentence: "Come sit over ___ with me.", choices: ["here", "hear"], correct: "here" },
+  { sentence: "Everyone ___ welcome to the party.", choices: ["is", "are"], correct: "is" },
+  { sentence: "I will ___ you a letter next week.", choices: ["write", "right"], correct: "write" },
+  { sentence: "Turn ___ at the next corner.", choices: ["write", "right"], correct: "right" },
+  { sentence: "We should ___ this recipe again sometime.", choices: ["try", "tried"], correct: "try" },
+  { sentence: "___ you like some tea?", choices: ["Would", "Wood"], correct: "Would" },
 ];
 
 const SPOT_ROUNDS = [
@@ -159,6 +179,26 @@ const SPOT_ROUNDS = [
   { sentence: "Who's coming to dinner tonight?", isCorrect: true },
   { sentence: "We're going too the market.", isCorrect: false, fix: "We're going to the market." },
   { sentence: "Their house has a lovely garden.", isCorrect: true },
+  { sentence: "We're taking our car to the picnic.", isCorrect: true },
+  { sentence: "Are car is parked out front.", isCorrect: false, fix: "Our car is parked out front." },
+  { sentence: "I would like a apple with my lunch.", isCorrect: false, fix: "I would like an apple with my lunch." },
+  { sentence: "She baked a apple pie for the party.", isCorrect: false, fix: "She baked an apple pie for the party." },
+  { sentence: "I need to buy too eggs for breakfast.", isCorrect: false, fix: "I need to buy two eggs for breakfast." },
+  { sentence: "It's nice to see you again.", isCorrect: true },
+  { sentence: "I'm coming along to.", isCorrect: false, fix: "I'm coming along too." },
+  { sentence: "Please close the gate on your way out.", isCorrect: true },
+  { sentence: "The weather is nice for a walk today.", isCorrect: true },
+  { sentence: "The children is playing in the yard.", isCorrect: false, fix: "The children are playing in the yard." },
+  { sentence: "Will you meat me at the station?", isCorrect: false, fix: "Will you meet me at the station?" },
+  { sentence: "We had chicken for dinner, not meet.", isCorrect: false, fix: "We had chicken for dinner, not meat." },
+  { sentence: "I can hear the birds singing outside.", isCorrect: true },
+  { sentence: "Come sit over hear with me.", isCorrect: false, fix: "Come sit over here with me." },
+  { sentence: "Everyone are welcome to the party.", isCorrect: false, fix: "Everyone is welcome to the party." },
+  { sentence: "I will write you a letter next week.", isCorrect: true },
+  { sentence: "Turn write at the next corner.", isCorrect: false, fix: "Turn right at the next corner." },
+  { sentence: "We should try this recipe again sometime.", isCorrect: true },
+  { sentence: "Wood you like some tea?", isCorrect: false, fix: "Would you like some tea?" },
+  { sentence: "The garden looks lovely this time of year.", isCorrect: true },
 ];
 
 function shuffleArr(arr) {
@@ -171,7 +211,7 @@ function shuffleArr(arr) {
 }
 
 function WordPlayGame({ onBack }) {
-  const [order] = useState(() => shuffleArr(WORD_ROUNDS));
+  const [order] = useState(() => shuffleArr(WORD_ROUNDS).slice(0, 8));
   const [index, setIndex] = useState(0);
   const [picked, setPicked] = useState(null);
   const [message, setMessage] = useState("Tap the word that fits best.");
@@ -301,10 +341,10 @@ function WordPlayGame({ onBack }) {
 }
 
 function SpotGame({ onBack }) {
-  const [order] = useState(() => shuffleArr(SPOT_ROUNDS));
+  const [order] = useState(() => shuffleArr(SPOT_ROUNDS).slice(0, 8));
   const [index, setIndex] = useState(0);
   const [picked, setPicked] = useState(null);
-  const [message, setMessage] = useState("Does this sentence sound right?");
+  const [message, setMessage] = useState("Does this sentence look right?");
   const [done, setDone] = useState(false);
 
   const round = order[index];
@@ -323,7 +363,7 @@ function SpotGame({ onBack }) {
     if (index + 1 < order.length) {
       setIndex(index + 1);
       setPicked(null);
-      setMessage("Does this sentence sound right?");
+      setMessage("Does this sentence look right?");
     } else {
       setDone(true);
     }
@@ -333,7 +373,7 @@ function SpotGame({ onBack }) {
     setIndex(0);
     setPicked(null);
     setDone(false);
-    setMessage("Does this sentence sound right?");
+    setMessage("Does this sentence look right?");
   };
 
   return (
