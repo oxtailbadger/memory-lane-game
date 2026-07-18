@@ -48,8 +48,8 @@ Everything lives in one file, roughly in this order:
 | Game | Status | Notes |
 |------|--------|-------|
 | Matching | ✅ | 6 icon pairs; cards linger 2.5s before flipping back. |
-| Word Play → Choose the Word | ✅ | Homophone fill-in-the-blank. |
-| Word Play → Spot the Slip | ✅ | "Sounds right / sounds off" grammar check. |
+| Word Play → Choose the Word | ✅ | Homophone fill-in-the-blank; 30-question bank, 8/round. |
+| Word Play → Spot the Slip | ✅ | "Look right / off" grammar check; 30-question bank, 8/round. |
 | Guess the Year | ✅ | 30-question bank, 8 random per round, scored. |
 | Name the Place | ✅ | 30 landmarks, 8 per round, scored. Includes Mike's places. |
 | Picture Puzzles | ✅ | 10 puzzles, 3×3 tap-to-swap. |
