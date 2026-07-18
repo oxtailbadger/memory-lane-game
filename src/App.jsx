@@ -260,7 +260,10 @@ function WordPlayGame({ onBack }) {
         <ArrowLeft size={24} /> Word Play
       </button>
 
-      <h1 style={{ fontFamily: "'Fraunces', serif", fontSize: 30, color: "#2F3B36", margin: "0 0 6px" }}>Choose the Word</h1>
+      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 6 }}>
+        <h1 style={{ fontFamily: "'Fraunces', serif", fontSize: 30, color: "#2F3B36", margin: 0 }}>Choose the Word</h1>
+        {!done && <span style={{ fontSize: 17, color: "#7A8C82", fontWeight: 700 }}>{index + 1} of {order.length}</span>}
+      </div>
       <p style={{ fontSize: 19, color: "#5B6B62", margin: "0 0 20px", minHeight: 28 }}>{message}</p>
 
       {done ? (
